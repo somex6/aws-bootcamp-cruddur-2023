@@ -275,3 +275,9 @@ aws budgets create-budget \
 **Budget Created**
 ![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week0/47.budget%20created.png)
 
+## My Napkin Design
+Finally, I made a sketch of of infrastructure whereby a user has to connect to a vpn before they can be able to reach the frontend server which is a pod in EKS which fetches its container from ECS and stores its data in RDS:
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week0/20230217_152059.jpg)
+
+
