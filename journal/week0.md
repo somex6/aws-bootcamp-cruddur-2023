@@ -26,7 +26,6 @@ click on the "Add MFA" button and that takes you to the page where to assign MFA
 Clicking on the "Assign MFA" button takes us to the page where I have to configure my device to be able to authenticate with it
 
 ![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week0/13.assigning%20mfa.png)
-![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week0/14.setting%20up%20device.png)
 
 After which I click on the "Add MFA" button and the MFA device will be assigned
 
