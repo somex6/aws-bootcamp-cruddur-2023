@@ -6,9 +6,9 @@ The bootcamp training started with guide on how to do a technical presentation o
 
 The infrastructure we will be setting up which I recreated with Lucid chart is shown below:
 
-![Cruddur Infrastructure](https://lucid.app/lucidchart/3d13a83b-ea51-42d1-8676-61031edf8512/edit?viewport_loc=-187%2C341%2C1700%2C722%2C0_0&invitationId=inv_72f4ff8a-98c8-4708-8111-3db005dbab53
+![Cruddur Infrastructure](https://lucid.app/lucidchart/3d13a83b-ea51-42d1-8676-61031edf8512/edit?viewport_loc=-187%2C341%2C1700%2C722%2C0_0&invitationId=inv_72f4ff8a-98c8-4708-8111-3db005dbab53)
 
-So to practicalize this, the following shows how I setup a budjet of a zero-spend and a billing alarm to notify me when I'm above the budjet.
+So to practicalize this, the following shows how I setup a budget of a zero-spend and a billing alarm to notify me when I'm above the budget.
 Firstof, Let's setup our account by attaching MFA to root Account, create an IAM user to use instead of my root account and setup health notification
 
 ## Attaching MFA To Root Account
