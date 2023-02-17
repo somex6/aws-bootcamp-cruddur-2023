@@ -6,7 +6,7 @@ The bootcamp training started with guide on how to do a technical presentation o
 
 The infrastructure we will be setting up which I recreated with Lucid chart is shown below:
 
-![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week0/logical%20diagram.png)
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week0/cruddur-infra.png)
 
 [Cruddur Infrastructure](https://lucid.app/lucidchart/3d13a83b-ea51-42d1-8676-61031edf8512/edit?viewport_loc=-187%2C341%2C1700%2C722%2C0_0&invitationId=inv_72f4ff8a-98c8-4708-8111-3db005dbab53)
 
@@ -171,4 +171,107 @@ After which I click on the "Add MFA" button and the MFA device will be assigned
 
 ![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week0/36.budget%20created.png)
 
+## Creating Budget From CLI Using Gitpod
+
+- Updating our .gitpod.yml to include the following task.
+```
+tasks:
+  - name: aws-cli
+    env:
+      AWS_CLI_AUTO_PROMPT: on-partial
+    init: |
+      cd /workspace
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      sudo ./aws/install
+      cd $THEIA_WORKSPACE_ROOT
+```
+
+- Setting my AWS credentials to be able to execute AWSCLI
+```
+export AWS_ACCESS_KEY_ID=""
+export AWS_SECRET_ACCESS_KEY=""
+export AWS_DEFAULT_REGION=us-east-1
+```
+- To make Gitpod remember these credentials when relaunching my workspaces
+```
+gp env AWS_ACCESS_KEY_ID=""
+gp env AWS_SECRET_ACCESS_KEY=""
+gp env AWS_DEFAULT_REGION=us-east-1
+```
+- Executing the following command to test it: `aws sts get-caller-identity`
+- Activating the Gitpod environment from aws bootcamp repo
+- Creating a folder and sub folder called aws/json
+- Creating the following files in the json subfolder:
+
+**budget-notifications-with-subscribers.json** file
+```
+[
+  {
+      "Notification": {
+          "ComparisonOperator": "GREATER_THAN",
+          "NotificationType": "ACTUAL",
+          "Threshold": 80,
+          "ThresholdType": "PERCENTAGE"
+      },
+      "Subscribers": [
+          {
+              "Address": "example@example.com",
+              "SubscriptionType": "EMAIL"
+          }
+      ]
+  }
+]
+```
+
+**budget.json** file
+```
+{
+  "BudgetLimit": {
+      "Amount": "100",
+      "Unit": "USD"
+  },
+  "BudgetName": "Example Tag Budget",
+  "BudgetType": "COST",
+  "CostFilters": {
+      "TagKeyValue": [
+          "user:Key$value1",
+          "user:Key$value2"
+      ]
+  },
+  "CostTypes": {
+      "IncludeCredit": true,
+      "IncludeDiscount": true,
+      "IncludeOtherSubscription": true,
+      "IncludeRecurring": true,
+      "IncludeRefund": true,
+      "IncludeSubscription": true,
+      "IncludeSupport": true,
+      "IncludeTax": true,
+      "IncludeUpfront": true,
+      "UseBlended": false
+  },
+  "TimePeriod": {
+      "Start": 1477958399,
+      "End": 3706473600
+  },
+  "TimeUnit": "MONTHLY"
+}
+```
+- Fetching my Account ID and saving it in environment variable to use in a command:
+```
+export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+```
+
+- Executing the following command to create the budget:
+```
+aws budgets create-budget \
+    --account-id $AWS_Account_ID \
+    --budget file://aws/json/budget.json \
+    --notifications-with-subscribers file://aws/json/budget-notifications-with-subscribers.json
+```
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week0/46.creating%20budget%20from%20cli.png)
+
+**Budget Created**
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week0/47.budget%20created.png)
 
