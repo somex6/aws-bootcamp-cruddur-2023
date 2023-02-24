@@ -13,16 +13,16 @@ export BACKEND_URL="*"
 pip3 install -r requirements.txt
 cd ..
 ```
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/10.running%20backend%20without%20docker..png)
 
 - Running the backend: `$ python3 -m flask run --host=0.0.0.0 --port=4567`
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/11.running%20the%20backend%20with%20pip%20command.png)
 
 - Opening the ports
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/12.ports%20opened.png)
 
 - Opening the link for port 4567 and appending "/api/activities/home" to the url will give back the following json: 
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/13.result.png)
 
 ## Building The Docker Image of Cruddur Backend Application
 
@@ -42,20 +42,25 @@ ENV FLASK_ENV=development
 EXPOSE ${PORT}
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567"]
 ```
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/14.creating%20Dockerfile%20for%20backend.png)
 
 - building the container image with the following command: `docker build -t  backend-flask .`
-![]()
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/15.building%20the%20image.png)
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/15.building%20the%20image%202.png)
+
 - Running the backend as a container: `docker run --rm -p 4567:4567 -it -e FRONTEND_URL='*' -e BACKEND_URL='*' backend-flask`
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/16.running%20the%20container.png)
+
 ## Running other Docker commands
 - To run container in the background: `docker container run --rm -p 4567:4567 -d backend-flask`
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/17.docker%20commands.png)
+
 - Using curl to test the server: `curl -X GET http://localhost:4567/api/activities/home -H "Accept: application/json" -H "Content-Type: application/json"`
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/18.testing%20the%20server.png)
+
 - To return the container id into an environment Variable: `CONTAINER_ID=$(docker run --rm -p 4567:4567 -d backend-flask)`
 - To check the logs: `docker logs $CONTAINER_ID -f`
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/19.docker%20logs.png)
 
 ## Building The Docker Image of Cruddur Frontend Application
 
@@ -71,16 +76,17 @@ RUN npm install
 EXPOSE ${PORT}
 CMD ["npm", "start"]
 ```
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/21.creating%20the%20frontend.png)
 
 - Building the frontend Image: `docker build -t frontend-react-js ./frontend-react-js`
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/22.building%20the%20image%20frontend%20image%201.png)
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/22.building%20the%20frontend%20image%202.png)
 
 - Running the container image: `docker run -p 3000:3000 -d frontend-react-js`
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/23.running%20the%20container.png)
 
 - Opening the port 3000 from the browser:
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/24.frontend%20web%20ui.png)
 
 ## Running Multiple containers with Docker Compose
 
@@ -114,12 +120,12 @@ networks:
     driver: bridge
     name: cruddur
 ```
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/25.creating%20docker-compose.png)
 
 - Running the docker compose command to create the frontend and backend container and make it live by right-clicking on the docker-compose.yml file and selecting "Docker compose up" option:
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/26.executing%20docker%20compose.png)
 
 - Opening the port 3000 on the browser:
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/27.result.png)
 
 
