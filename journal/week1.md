@@ -169,8 +169,6 @@ volumes:
 
 - Installing the postgres client into Gitop by running the following command:
 ```
-  - name: postgres
-    init: |
       curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
       echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list
       sudo apt update
@@ -236,7 +234,7 @@ volumes:
 ```
 - Running the Docker-compose.yml file
 
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/28.docker%20compose%20for%20dynamodb.png)
 
 - Creating DynamoDB table:
 ```
@@ -250,7 +248,7 @@ aws dynamodb create-table \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
     --table-class STANDARD
 ```
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/29.creating%20a%20dynamodb%20table.png)
 
 - Adding an item to the database table
 ```
@@ -261,25 +259,73 @@ aws dynamodb put-item \
         '{"Artist": {"S": "No One You Know"}, "SongTitle": {"S": "Call Me Today"}, "AlbumTitle": {"S": "Somewhat Famous"}}' \
     --return-consumed-capacity TOTAL  
 ```
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/30.adding%20item%20in%20the%20db.png)
 
 - Listing the tables: `$ aws dynamodb list-tables --endpoint-url http://localhost:8000`
 - Fetching records from the database: `$ aws dynamodb scan --table-name Music --query "Items" --endpoint-url http://localhost:8000`
-![]()
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/31.list%20and%20get%20items%20from%20the%20table.png)
 
 - Connecting to the Postgres server
 
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/33.connecting%20to%20postgres%20server.png)
 
 - Connecting to the Postgres client: `$ psql -U postgres --host localhost`
 
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/34.connecting%20to%20postgres%20client.png)
 
+## Running Docker CMD From an External Script(from local machine)
 
+- Creating the external script **start-flask** to be run with the CMD command for backend Dockerfile:
+```
+#!/usr/bin/env bash
 
+python3 -m flask run --host=0.0.0.0 --port=4567
+```
+- Updating the Dockerfile:
+```
+FROM python:3.10-slim-buster
 
+WORKDIR /backend-flask
 
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
 
+COPY . .
+
+COPY start-flask /usr/local/bin
+ENV FLASK_ENV=development
+
+EXPOSE ${PORT}
+CMD [ "start-flask"]
+```
+
+- Building Docker image from the Dockerfile: `$ docker build -t  backend-flask .`
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/38.running%20CMD%20external%20script.png)
+- Running the Dockerfile: `$ docker run --rm -p 4567:4567 -it -e FRONTEND_URL='*' -e BACKEND_URL='*' backend-flask`
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/38.running%20cmd%20external%20script%202.png)
+
+- Verifying from the browser
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/39.result.png)
+
+## Creating Docker Repository To Push The images
+
+- Creating repository for the backend and frontend from the Docker console after Login
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/41.creating%20repo%20for%20cruddur%20frontend.png)
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/41.repositories%20created.png)
+
+- Logging into Docker from the CLI: `$ docker login`
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/42.docker%20login.png)
+
+- Tagging the image to be pushed: `$ docker tag frontend-react-js:0.0.1 somex6/cruddur-frontend:0.0.1`
+- Pushing the image to the Docker repo: `$ docker push somex6/cruddur-frontend:0.0.1`
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/43.%20pushing%20the%20image%20to%20the%20repo.png)
 
 
 
