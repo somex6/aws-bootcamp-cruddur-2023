@@ -327,9 +327,255 @@ CMD [ "start-flask"]
 
 ![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/43.%20pushing%20the%20image%20to%20the%20repo.png)
 
+## Creating Endpoint For Notification Page Of the Cruddur App
 
+- After a successful sign up and logging into the app, when the notification button is clicked it shows an error because the endpoint is not created yet.
+- To create the endpoint, opening the "openapi-3.0.yml" file located in "backend-flask/" directory and adding the following configuration:
+```
+  /api/activities/notifications:
+    get:
+      description: 'Return a feed of activity for all of those that I follow'
+      tags:
+        - activities
+      parameters: []
+      responses:
+        '200':
+          description: Returns an array of activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+```
+- Adding the following configuration for Notification service in the "backend-flask/services/" directory called **notifications_activities.py**:
+```
+from datetime import datetime, timedelta, timezone
+class NotificationsActivities:
+  def run():
+    now = datetime.now(timezone.utc).astimezone()
+    results = [{
+      'uuid': '68f126b0-1ceb-4a33-88be-d90fa7109eee',
+      'handle':  'Gregor',
+      'message': 'Crushing the bootcamp courses',
+      'created_at': (now - timedelta(days=2)).isoformat(),
+      'expires_at': (now + timedelta(days=5)).isoformat(),
+      'likes_count': 5,
+      'replies_count': 1,
+      'reposts_count': 0,
+      'replies': [{
+        'uuid': '26e12864-1c26-5c3a-9658-97a10f8fea67',
+        'reply_to_activity_uuid': '68f126b0-1ceb-4a33-88be-d90fa7109eee',
+        'handle':  'worf',
+        'message': 'this post has no honor!',
+        'likes_count': 0,
+        'replies_count': 0,
+        'reposts_count': 0,
+        'created_at': (now - timedelta(days=2)).isoformat()
+      }],
+    }
+    ]
+    return results
+```
 
+- importing the service in the "app.py" file which is the entry of our backend by adding this at the top:
+```
+from services.notifications_activities import *
+```
+- And then defining the notification api route on the same "app.py" file with a **GET** method like so:
+```
+@app.route("/api/activities/notifications", methods=['GET'])
+def data_notifications():
+  data = NotificationsActivities.run()
+  return data, 200
+```
+- Commiting and pushing the code
+- Testing it from the browser by entering the new api endpoint configured "https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}:4567/api/activities/notifications"
 
+![]()
+
+## Creating The Notifications page For The Frontend Of The Cruddur App
+
+- To be able to make the frontend fetch Notification data from the backend, creating the Notfication page file in the "frontend-react-js/src/pages/" directory called **NotificationsFeedPage.js**:
+```
+import './NotificationsFeedPage.css';
+import React from "react";
+
+import DesktopNavigation  from '../components/DesktopNavigation';
+import DesktopSidebar     from '../components/DesktopSidebar';
+import ActivityFeed from '../components/ActivityFeed';
+import ActivityForm from '../components/ActivityForm';
+import ReplyForm from '../components/ReplyForm';
+
+// [TODO] Authenication
+import Cookies from 'js-cookie'
+
+export default function NotificationsFeedPage() {
+  const [activities, setActivities] = React.useState([]);
+  const [popped, setPopped] = React.useState(false);
+  const [poppedReply, setPoppedReply] = React.useState(false);
+  const [replyActivity, setReplyActivity] = React.useState({});
+  const [user, setUser] = React.useState(null);
+  const dataFetchedRef = React.useRef(false);
+
+  const loadData = async () => {
+    try {
+      const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/notifications`
+      const res = await fetch(backend_url, {
+        method: "GET"
+      });
+      let resJson = await res.json();
+      if (res.status === 200) {
+        setActivities(resJson)
+      } else {
+        console.log(res)
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const checkAuth = async () => {
+    console.log('checkAuth')
+    // [TODO] Authenication
+    if (Cookies.get('user.logged_in')) {
+      setUser({
+        display_name: Cookies.get('user.name'),
+        handle: Cookies.get('user.username')
+      })
+    }
+  };
+
+  React.useEffect(()=>{
+    //prevents double call
+    if (dataFetchedRef.current) return;
+    dataFetchedRef.current = true;
+
+    loadData();
+    checkAuth();
+  }, [])
+
+  return (
+    <article>
+      <DesktopNavigation user={user} active={'notifications'} setPopped={setPopped} />
+      <div className='content'>
+        <ActivityForm  
+          popped={popped}
+          setPopped={setPopped} 
+          setActivities={setActivities} 
+        />
+        <ReplyForm 
+          activity={replyActivity} 
+          popped={poppedReply} 
+          setPopped={setPoppedReply} 
+          setActivities={setActivities} 
+          activities={activities} 
+        />
+        <ActivityFeed 
+          title="Notifications" 
+          setReplyActivity={setReplyActivity} 
+          setPopped={setPoppedReply} 
+          activities={activities} 
+        />
+      </div>
+      <DesktopSidebar user={user} />
+    </article>
+  );
+}
+```
+- Creating the styling for the page in the same directory called **NotificationsFeedPage.css**:
+```
+article {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+```
+- Configuring the route to the Notification page by importing the "NotificationsFeedPage.js" file in the **App.js** file like so:
+```
+import NotificationsFeedPage from './pages/NotificationsFeedPage';
+```
+- Then adding Notification route in the same file:
+```
+  {
+    path: "/notifications",
+    element: <NotificationsFeedPage />
+  },
+```
+
+**Complete code**
+```
+import './App.css';
+
+import HomeFeedPage from './pages/HomeFeedPage';
+import NotificationsFeedPage from './pages/NotificationsFeedPage';
+import UserFeedPage from './pages/UserFeedPage';
+import SignupPage from './pages/SignupPage';
+import SigninPage from './pages/SigninPage';
+import RecoverPage from './pages/RecoverPage';
+import MessageGroupsPage from './pages/MessageGroupsPage';
+import MessageGroupPage from './pages/MessageGroupPage';
+import ConfirmationPage from './pages/ConfirmationPage';
+import React from 'react';
+import process from 'process';
+import {
+  createBrowserRouter,
+  RouterProvider
+} from "react-router-dom";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <HomeFeedPage />
+  },
+  {
+    path: "/notifications",
+    element: <NotificationsFeedPage />
+  },
+  {
+    path: "/@:handle",
+    element: <UserFeedPage />
+  },
+  {
+    path: "/messages",
+    element: <MessageGroupsPage />
+  },
+  {
+    path: "/messages/@:handle",
+    element: <MessageGroupPage />
+  },
+  {
+    path: "/signup",
+    element: <SignupPage />
+  },
+  {
+    path: "/signin",
+    element: <SigninPage />
+  },
+  {
+    path: "/confirm",
+    element: <ConfirmationPage />
+  },
+  {
+    path: "/forgot",
+    element: <RecoverPage />
+  }
+]);
+
+function App() {
+  return (
+    <>
+      <RouterProvider router={router} />
+    </>
+  );
+}
+
+export default App;
+```
+- Commiting and pushing the code to github
+- Testing the frontend from the browser by entering this address "https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}:3000"
+
+![]()
 
 
 
