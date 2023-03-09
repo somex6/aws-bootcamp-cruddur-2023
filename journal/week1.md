@@ -392,7 +392,7 @@ def data_notifications():
 - Commiting and pushing the code
 - Testing it from the browser by entering the new api endpoint configured "https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}:4567/api/activities/notifications"
 
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/46.showing%20notification%20endpoint.png)
 
 ## Creating The Notifications page For The Frontend Of The Cruddur App
 
@@ -575,7 +575,74 @@ export default App;
 - Commiting and pushing the code to github
 - Testing the frontend from the browser by entering this address "https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}:3000"
 
-![]()
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/47.showing%20notfication%20page%20on%20frontend.png)
 
+## Running the Cruddur Containers On EC2 Machine
 
+- Navigating to EC2 dashboard in AWS console and clicking on **Launch Instance**
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/50.ec2%20dashboard.png)
+
+- Selecting the specifications of the EC2 machine I want and clicking on **Launch Instance** button
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/51.launching%20the%20instance.png)
+
+- EC2 machine launched in a running state
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/52.ec2%20instance%20in%20running%20state.png)
+
+- To connect to the Instance from my terminal, clicking on **connect** button and selecting **SSH client** tab to copy the command for connecting to the instance machine
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/53.getting%20info%20on%20connecting%20to%20the%20instance.png)
+
+- Pasting the command on my local machine terminal and execute
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/54.connecting%20to%20the%20instance.png)
+
+- Updating the packages: `$ sudo apt update -y`
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/55.updating%20the%20packages.png)
+
+- Installing the docker Packages: `sudo apt install docker.io`
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/56.installing%20docker.png)
+
+- Testing the installation by executing docker command:
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/57.testing%20the%20installation.png)
+
+- When tried to pull the cruddur docker images from the docker repositories I got this error:
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/58.error%20while%20pulling%20image.png)
+
+- To solve the error, adding the active user "ubuntu" to the Docker group: `$ sudo usermod -aG docker ubuntu`
+- Restarting the docker service: `$ sudo systemctl restart docker`
+- Rebooting the instance machine to reconnect again
+- After reconnecting, pulling the frontend cruddur image: `$ docker image pull somex6/cruddur-frontend:0.0.1`
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/59.pulling%20the%20frontend%20image.png)
+
+- Pulling the backend container: `$ docker image pull somex6/cruddur-backend:0.0.1`
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/60.pulling%20the%20backend%20image.png)
+
+- Running the backend container in background state: `docker run --rm -p 4567:4567 -it -e FRONTEND_URL='*' -e BACKEND_URL='*' -d somex6/cruddur-backend:0.0.1`
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/61.running%20the%20backend%20container.png)
+
+- Running the frontend container in background: `docker run --rm -p 3000:3000 -it -e REACT_APP_BACKEND_URL='*' -d somex6/cruddur-frontend:0.0.1`
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/62.running%20the%20frontend%20container.png)
+
+- Opening ports 3000 and 4567 in the security group in other for the EC2 to accept traffic:
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/63.opening%20the%20ports%20in%20the%20security%20group.png)
+
+- Testing the backend by entering the IP address of the ec2 machine and appending '/api/activities/home': `http://100.25.17.170:4567/api/activities/home`
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/64.backend%20webpage.png)
+
+- Testing the frontend: `http://100.25.17.170:3000`
+
+![](https://github.com/somex6/aws-bootcamp-cruddur-2023/blob/my-rough/journal/images/week1/64.frontend%20web.png)
 
